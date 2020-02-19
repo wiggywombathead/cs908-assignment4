@@ -10,6 +10,7 @@ $(OUT).pdf: $(FILES)
 	$(LATEX) $(MAIN).tex
 	$(BIBTEX) $(MAIN)
 	$(LATEX) $(MAIN).tex
+	$(LATEX) $(MAIN).tex
 
 count:
 	detex $(MAIN) | wc -w
