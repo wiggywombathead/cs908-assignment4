@@ -1,0 +1,187 @@
+\documentclass[10pt,a4paper]{article}
+
+% images
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{subfig}
+
+% reference items
+\usepackage{enumitem}
+
+% links
+\usepackage{url}
+\usepackage{hyperref}
+
+\usepackage{pdfpages}
+\usepackage{pgfplots}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows,automata,positioning}
+
+\usepackage{footnote}
+
+% maths
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{dsfont}
+\usepackage{bm}
+
+\usepackage{amsthm}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{lemma}[theorem]{Lemma}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+
+\newenvironment{subproof}[1][\proofname]{%
+  \renewcommand{\qedsymbol}{$\blacksquare$}%
+  \begin{proof}[#1]%
+}{%
+  \end{proof}%
+}
+
+\newtheorem*{claim*}{Claim}
+\newtheorem*{corollary}{Corollary}
+\newtheorem*{remark}{Remark}
+\newtheorem*{fact}{Fact}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+ 
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand*\conj[1]{\overline{#1}}
+\newcommand*\vect[1]{\bm{#1}}
+
+% No section numbering
+% \setcounter{secnumdepth}{0}
+
+\bibliographystyle{siam}
+
+\title{\textsc{CS908 Assignment 4 - Research Proposal}}
+\author{Thomas Archbold}
+\date{}
+
+\begin{document}
+\maketitle
+
+% Introduction (Background, Aims, Problem Statement)
+% Related Work (Academic Research, Existing Systems)
+% Research Processes (Approach, Methodology)
+% Project Management (Timeline, Constraints, Risk)
+% Progress
+% Conclusion
+
+% Problem definition and literature review        /20
+% Research methodology and viability              /40
+% Project plan: time management and risk analysis /10
+% Communication skills                            /30
+
+\section{Introduction}
+
+Prediction markets are exchange-traded markets\footnote{A market in which all
+transactions are routed through a central source.} that trade on the outcome of
+events, as opposed to traditional financial instruments. Since actors in the
+market participate by putting up their own money in the form of betting on an
+unknown future outcome, the market prices can indicate the beliefs held by the
+market of certain events occurring. What can make these markets even more
+interesting is the ability to combine these bids on events in complex ways,
+giving users the freedom to make predictions over a range of different unknown
+outcomes. This is the approach taken by \emph{Predictalot}~\cite{Predictalot},
+which boasts a platform on which one can bet on over 9.2 quintillion outcomes
+in the NCAA Men's College Basketball playoffs. This specification outlines the
+plans to implement a similar combinatorial prediction market for betting on
+outcomes in the Gallagher Premiership Rugby league, placing as few restrictions
+as possible on the types of bets available to traders.
+
+The rest of the specification is structured as follows. In
+Section~\ref{sec:background} we outline in greater detail the motivation for
+such a project, highlighting the gaps in the current literature and presenting
+our specific goals for the platform. In Section~\ref{sec:relatedWork} we
+discuss recent results in mechanism design for combinatorial auctions as well
+as current software implementing other prediction markets. In
+Section~\ref{sec:researchProcesses} we outline the methods and approaches we
+plan to take in order to complete this project. Aspects related to the
+effective management of the project are discussed in
+Section~\ref{sec:projectManagement}. We conclude with a brief discussion of
+progress made thus far in Section~\ref{sec:progress}, followed by closing
+thoughts and plans for the next stages in Section~\ref{sec:conclusion}.
+
+\section{Background}
+	\label{sec:background}
+
+	\subsection{Problem Statement}
+	% combinatorial auctions hard
+	% prediction markets are good for crowdsourcing public sentiment
+
+	Prediction markets provide ways in which to bet on the occurrence of events
+	in the future, and are often used to bet on a variety of circumstances --
+	this could be on the outcomes of a political election, sporting events, or
+	any other probabilistic event. Since there is an incentive to do well in
+	such a market, by players staking their own money or units from some point
+	system, people are inclined to bet how they truly feel about certain
+	events, and hence public sentiment on these events can be crowdsourced to
+	learn how likely they are thought to occur. Combinatorial prediction
+	markets, taking inspiration from the theoretical economics and mechanism
+	design literature, allows for multiple bets to be bought and sold at once,
+	and it is how these are combined in complex ways that we may learn the most
+	about how the public view the likelihood of separate events as being
+	related.
+
+	It is well-known, however, that computing allocations of goods to buyers
+	that maximises, for example, social welfare or revenue, requires solving an
+	NP-hard optimisation problem \cite{VCGNPhard}. Furthermore, for a market
+	offering bets on $n$ separate events, there are $2^n$ possible ways of
+	combining such bets -- how can we expect users to enter an exponential
+	number of bids before they even get to participate in the market? These two
+	problems are the focus of much of the literature within algorithmic
+	mechanism design \cite{AMD}, a subfield within algorithmic game theory.
+	Broadly, this is an area of research at the intersection of economics and
+	computer science that is concerned with designing the ways in which
+	self-interested agents act within a strategic environment to achieve
+	certain economic properties -- truthfulness, budget balance, individual
+	rationality, for example -- while ensuring that the mechanisms remain
+	practical to implement. It hence makes extensive use of techniques favoured
+	in computer science, most notably asymptotic analysis, randomisation, and
+	approximation. The goal in the modern literature therefore departs from
+	striving to compute the idealistic but impractical optimal solution,
+	towards computing ones which are approximately-optimal, or ``good enough''.
+
+	Even restricting ourselves to approximately-optimal solutions, we are faced
+	with another problem -- how do we define ``good enough''? What makes, say,
+	a 6-approximation for computing an allocation in a two-sided market any
+	better than a 7-approximation that also achieves group-strategy
+	proofness?\footnote{These are just examples to illustrate the point and may
+	or may not exist.} The answer is that it depends -- trade offs must be made
+	on a variety of parameters and assumptions that we make on the model. For
+	example, are buyers required to submit a bid on a single bet, stopping the
+	ability for bets to be combined but yielding a better approximation, or can
+	they submit up to $k$ desired sets of bets, at the cost of some
+	performance?
+	% Since we dont know, we will play around with this
+
+	\subsection{Aims}
+
+\section{Related Work}
+	\label{sec:relatedWork}
+
+	\subsection{Contemporary Literature}
+	\subsection{Existing systems}
+
+\section{Research Processes}
+	\label{sec:researchProcesses}
+
+\section{Project Management}
+	\label{sec:projectManagement}
+
+\section{Progress}
+	\label{sec:progress}
+
+\section{Conclusion}
+	\label{sec:conclusion}
+
+\bibliography{bibliography}
+
+\end{document}
