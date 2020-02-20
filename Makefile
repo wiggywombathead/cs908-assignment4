@@ -6,7 +6,7 @@ FILES = $(wildcard *.tex)
 
 OUT = $(MAIN)
 
-$(OUT).pdf: $(FILES)
+$(OUT).pdf: $(FILES) bibliography.bib
 	$(LATEX) $(MAIN).tex
 	$(BIBTEX) $(MAIN)
 	$(LATEX) $(MAIN).tex

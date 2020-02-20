@@ -81,81 +81,98 @@
 
 \section{Introduction}
 
-Prediction markets are exchange-traded markets\footnote{A market in which all
-transactions are routed through a central source.} that trade on the outcome of
-events, as opposed to traditional financial instruments. Since actors in the
-market participate by putting up their own money in the form of betting on an
-unknown future outcome, the market prices can indicate the beliefs held by the
-market of certain events occurring. What can make these markets even more
-interesting is the ability to combine these bids on events in complex ways,
-giving users the freedom to make predictions over a range of different unknown
-outcomes. This is the approach taken by \emph{Predictalot}~\cite{Predictalot},
-which boasts a platform on which one can bet on over 9.2 quintillion outcomes
-in the NCAA Men's College Basketball playoffs. This specification outlines the
-plans to implement a similar combinatorial prediction market for betting on
-outcomes in the 2020 United States presidential election, placing as few
-restrictions as possible on the types of bets available to traders.
+	Prediction markets are exchange-traded markets\footnote{A market in which
+	all transactions are routed through a central source.} that trade on the
+	outcome of events, as opposed to traditional financial instruments. Since
+	actors in the market participate by putting up their own money in the form
+	of betting on an unknown future outcome, the market prices can indicate the
+	beliefs held by the market of certain events occurring. What can make these
+	markets even more interesting is the ability to combine these bids on
+	events in complex ways, giving users the freedom to make predictions over a
+	range of different unknown outcomes. This is the approach taken by
+	\emph{Predictalot}~\cite{Predictalot}, which boasts a platform on which one
+	can bet on over 9.2 quintillion outcomes in the NCAA Men's College
+	Basketball playoffs. This specification outlines the plans to implement a
+	similar combinatorial prediction market for betting on outcomes in the 2020
+	United States presidential election, placing as few restrictions as
+	possible on the types of bets available to traders.
 
-The rest of the specification is structured as follows. In
-Section~\ref{sec:aims} we outline in greater detail the motivation for such a
-project and present our specific goals for the platform. In
-Section~\ref{sec:background} we discuss the underlying theory on which we will
-model the platform, including recent results in mechanism design for
-combinatorial auctions. We also discuss the current software that exists in use
-by others to implement other prediction markets, as well as how this project
-will fit in with the current body of work.  In
-Section~\ref{sec:researchProcesses} we outline the methods and approaches we
-plan to take in order to complete this project, including a brief discussion of
-the tools, technology, and data that we plan to use. Aspects related to the
-effective management of the project are discussed in
-Section~\ref{sec:projectManagement}. We conclude with a brief discussion of
-progress made thus far in Section~\ref{sec:progress}, followed by closing
-thoughts and plans for the next stages in Section~\ref{sec:conclusion}.
+	The rest of the specification is structured as follows. In
+	Section~\ref{sec:overview} we outline in greater detail the motivation for
+	such a project and present our specific goals for the platform. In
+	Section~\ref{sec:background} we discuss the underlying theory on which we
+	will model the platform, including recent results in mechanism design for
+	combinatorial auctions. We also discuss the current software that exists in
+	use by others to implement other prediction markets, as well as how this
+	project will fit in with the current body of work. In
+	Section~\ref{sec:researchProcesses} we outline the methods and approaches
+	we plan to take in order to complete this project, including a brief
+	discussion of the tools, technology, and data that we plan to use. Aspects
+	related to the effective management of the project are discussed in
+	Section~\ref{sec:projectManagement}. We conclude with a brief discussion of
+	progress made thus far in Section~\ref{sec:progress}, followed by closing
+	thoughts and plans for the next stages in Section~\ref{sec:conclusion}.
 
-\section{Project aims}
-	\label{sec:aims}
+\section{Project overview}
+	\label{sec:overview}
 
-	\subsection{Overview}
-	% combinatorial auctions hard
-	% prediction markets are good for crowdsourcing public sentiment
+	\subsection{Problem Statement}
+
+	The goal of this project is to produce a combinatorial prediction market
+	for the upcoming 2020 US presidential election and related events in the
+	run up to it taking place on 3 November. Participants within this market
+	will be able to place and trade bets based on what they think is likely to
+	happen. The trading of bets on the outcomes may occur up to the event
+	itself and the platform will update the odds accordingly. When the outcome
+	of the event is realised, winnings will be paid out to those who own the
+	``right'' to redeem a bet.
+
+	This goal will be achieved by writing software on which to host such a
+	market; this will be in the form of a web application written in Common
+	Lisp. Moreover, the platform will allow for different auction mechanisms to
+	be implemented and explored, with the aim of measuring the impact of
+	varying the underlying model on the market's functionality and performance.
+
+	\subsection{Motivation}
 
 	Prediction markets provide ways in which to bet on the occurrence of events
 	in the future, and are often used to bet on a variety of circumstances --
 	this could be on the outcomes of a political election, sporting events, or
 	any other probabilistic event. Since there is an incentive to do well in
-	such a market, by players staking their own money or units from some point
-	system, people are inclined to bet how they truly feel about certain
-	events, and hence public sentiment on these events can be crowdsourced to
-	learn how likely they are thought to occur. Combinatorial prediction
-	markets, taking inspiration from the theoretical economics and mechanism
-	design literature, allows for bets to be bought and sold, and it is how
-	these are combined in complex ways that we may learn the most about how the
-	public view the likelihood of separate events as being related. With this
-	project, we hence seek to implement a combinatorial prediction market for
-	the 2020 US presidential election. There is significant global importance
-	to the outcome of this and the individual events that comprise the
-	presidential campaigns that it would provide useful insight into public
-	sentiment on the matter -- or at least, more so than for men's college
-	basketball.
+	such a market, as players stake their own money, people are inclined to bet
+	how they truly feel about certain events, and hence the learning of public
+	sentiment on these events can effectively be crowdsourced. Combinatorial
+	prediction markets, taking inspiration from the theoretical economics and
+	mechanism design literature, allows for bets to be bought and sold and in
+	combining these bets to keep track of the odds, we may learn how the people
+	view the likelihood of related and unrelated events. With this project, we
+	seek to implement a combinatorial prediction market for the 2020 US
+	presidential election. There is significant global importance to the
+	outcome of this and the individual events that comprise the presidential
+	campaigns that it would provide useful insight into public sentiment on the
+	matter -- or at least, more so than for men's college basketball.
 
-	It is well-known, however, that computing allocations of goods to buyers
-	maximising, for example, social welfare or revenue, requires solving an
-	NP-hard optimisation problem \cite{VCGNPhard}. Furthermore, for a market
-	offering bets on $m$ separate events, there are $2^m$ possible ways of
-	combining such bets -- how can we expect users to enter an exponential
-	number of bids before they even get to participate in the market? These two
-	problems are the focus of much of the literature within algorithmic
-	mechanism design \cite{AMD}, a subfield within algorithmic game theory.
-	Broadly, this is an area of research at the intersection of economics and
-	computer science that is concerned with designing the ways in which
-	self-interested agents act within a strategic environment and achieving
-	certain economic properties -- truthfulness, budget balance, individual
-	rationality, for example -- while ensuring that the mechanisms remain
-	practical to implement. It hence makes extensive use of techniques favoured
-	in computer science, most notably asymptotic analysis, randomisation, and
-	approximation. The goal in the modern literature therefore departs from
-	striving to compute the idealistic but impractical optimal solution,
-	towards computing ones which are approximately-optimal, or ``good enough''.
+	From the mechanism design literature, however, it is well-known that
+	computing allocations of goods to buyers maximising, for example, social
+	welfare or revenue, requires solving an NP-hard optimisation problem
+	\cite{VCGNPhard}. Furthermore, for a market offering bets on $m$ separate
+	events, there are $2^m$ possible ways of combining such bets -- how can we
+	expect users to enter an exponential number of bids before they even get to
+	participate in the market? These two problems are the focus of much of the
+	literature within algorithmic mechanism design \cite{Nisan2001}, a subfield
+	within algorithmic game theory. Broadly, this is an area of research at
+	the intersection of economics and computer science that is concerned with
+	designing the ways in which self-interested agents act within a strategic
+	environment and achieving certain economic properties -- truthfulness,
+	budget balance, individual rationality, for example -- while ensuring that
+	the mechanisms remain practical to implement. It hence makes extensive use
+	of techniques found in computer science, most notably asymptotic
+	analysis, randomisation, and approximation. The goal in the modern
+	literature therefore departs from striving to compute the idealistic but
+	impractical optimal solution, towards computing ones which are
+	approximately-optimal, or ``good enough''. It is with this in mind that we
+	wish to explore the challenges associated with implementing such a market,
+	due to its strong ties with theoretical computer science.
 
 	Even restricting ourselves to approximately-optimal solutions, we are faced
 	with yet another problem -- how do we define ``good enough''? What makes,
@@ -170,9 +187,11 @@ thoughts and plans for the next stages in Section~\ref{sec:conclusion}.
 	single metric by which we can judge a mechanism's performance, this project
 	also aims to implement software that is generalised enough such that it is
 	capable of tweaking the parameters on the market to see what, if any,
-	impact they have on the functioning of the system as a whole.
+	impact they have on the functioning of the system as a whole. Thus the
+	project can serve as a platform to implement and analyse recent mechanisms
+	in the literature in a practical environment.
 
-	\subsection{Features}
+	\subsection{Aims}
 
 	As stated, the main aim of this project is to create a combinatorial
 	prediction market for betting on outcomes in the forthcoming US
@@ -233,7 +252,7 @@ thoughts and plans for the next stages in Section~\ref{sec:conclusion}.
 	$\{ 1, \ldots, k \}$} It is a typical for an auction to elicit a bid $b_i$
 	from each agent so as to acquire their valuation $v_i$ -- note, however,
 	that since the agents are strategic they may lie (i.e., submit bid $b_i
-	\neq v_i$) if they believe it is in their best interests.  The Vickrey
+	\neq v_i$) if they believe it is in their best interests. The Vickrey
 	mechanism \cite{Vickrey1961} achieves such an allocation by believing the
 	bidders, giving the item to the agent with the highest bid, and charging
 	him the next highest bid.
@@ -251,7 +270,7 @@ thoughts and plans for the next stages in Section~\ref{sec:conclusion}.
 	subsets, and effectively a bid of zero for every other set. There are also
 	subtleties involved in allowing items to be homogeneous, in which case the
 	auction contains $m$ copies of the same item, or heterogeneous, where each
-	item is unique.  The idea of this project is to model bets on future
+	item is unique. The idea of this project is to model bets on future
 	outcomes as items, and since we will be combining different bets to learn
 	about public sentiment on these outcomes, we assume the items in the
 	auction to be heterogeneous. Furthermore, since we are keen to explore the
@@ -267,7 +286,7 @@ thoughts and plans for the next stages in Section~\ref{sec:conclusion}.
 	social welfare, which we denote $W$. If we compute allocation $A = (A_1,
 	\ldots, A_n)$, where agent $i$ is allocated subset $A_i$, then the value we
 	are maximising as a function of this allocation is $W(A) = \sum_{i \in [n]}
-	v_i(A_i)$.  The analogue to the Vickrey auction in the multi-item setting,
+	v_i(A_i)$. The analogue to the Vickrey auction in the multi-item setting,
 	the Vickrey-Clarke-Groves mechanism \cite{Vickrey1961, Clarke1971,
 	Groves1973} again believes the bidders and awards subsets to agents who
 	value them most and charges each bidder their \emph{externality}, or the
@@ -296,10 +315,8 @@ thoughts and plans for the next stages in Section~\ref{sec:conclusion}.
 	item. As before, buyers have a valuation $v_i(S)$ for each subset of items
 	$S$, and we introduce the same idea for the sellers, which we denote
 	$w_j(S)$. Our goal is still to maximise the social welfare, which we now
-	write as:
-	\begin{equation*}
-		W(X, Y) = \sum_{i \in [n]} v_i(X_i) + \sum_{j \in [m]} w_j(Y_j)
-	\end{equation*}
+	write as: \begin{equation*} W(X, Y) = \sum_{i \in [n]} v_i(X_i) + \sum_{j
+	\in [m]} w_j(Y_j) \end{equation*}
 
 	We conclude our discussion of the underlying by introducing some of the
 	main economic properties pursued in the field of mechanism design, useful
@@ -354,9 +371,75 @@ thoughts and plans for the next stages in Section~\ref{sec:conclusion}.
 
 	\subsection{Existing systems}
 
+	Prediction markets are not a novel concept and there are several examples
+	of recent systems for various settings. This project's conception was
+	initially inspired by the author's discovery, at the suggestion of
+	supervisor Matthias Englert, of \emph{Predictalot} \cite{Predictalot}, a
+	combinatorial prediction market for betting on the outcomes of a wide range
+	of events in the NCAA Men's College basketball playoffs. It launched as a
+	Yahoo! app in 2010, though it appears to have since been abandoned.
+	Nonetheless, it boasts the ability to bet on ``almost anything you can
+	think of, like \emph{Duke will advance further than UNC}''. Specifically,
+	the tournament is structured such that the top 64 college basketball teams
+	play 63 games in a single elimination tournament, while \emph{Predictalot}
+	keeps track of the odds, computing them by scanning through all the
+	predictions placed so far. They note that an exact computation of the odds
+	is \#P-hard -- as hard as counting the number of variable assignments that
+	satisfy a given CNF formula, or how many subsets of a list of integers sum
+	to zero -- hence justifying their decision to approximate the odds by
+	random sampling of the outcome space. They also emphasise that they keep
+	track of all different possible outcomes, resulting in odds that are
+	interconnected in natural ways -- betting on a team to make the final will
+	have an effect on the odds of each stage, since the team must win at each
+	of these stages to reach the final in the first place. Given the apparent
+	power behind this idea, it would be interesting to apply it to a setting
+	with perhaps more significance, such as the upcoming presidential
+	elections.
 
+	\emph{Augur} \cite{Augur} is more recent example, and in July 2018 became
+	the first decentralised prediction market, launched on the Ethereum
+	blockchain.  Similarly to how this project will be structured, \emph{Augur}
+	hosts the prediction market in two phases: the market stage, where users
+	are able to trade shares between each other, and the arbitration stage,
+	where the market's outcome is determined. However, \emph{Augur} makes use
+	of fees to subsidise the arbitration process, breaking the budget balance
+	property discussed earlier. This makes it less appealing, as money is
+	required to be fed into the system in order for it to function.
+
+	Both \emph{PredictIt} \cite{PredictIt} and the Iowa Electronic Markets
+	(IEM) \cite{IEM} provide the ability to make bets on various political
+	events, including on outcomes within the 2020 US presidential election.
+	However, like \emph{Augur}, they do not provide the ability to combine
+	these bets in complex ways and hence this is a gap that this project aims
+	to fill.
+
+	This project will differ from these mainly in the fact that we will
+	implement a combinatorial prediction market, with a focus on making bets on
+	a combination of outcomes -- the only similar existing software
+	implementing this was \emph{Predictalot}, which is no longer maintained or
+	even accessible. Betting on collections of events better incorporates
+	conditional information into the market price, hence giving a more
+	realistic view of how events are related. The project will also differ in
+	the means by which users will interact with the markets. Specifically, on
+	each of the existing systems discussed, the prices of bets are shown and it
+	is up to the user if they wish to participate in the trade at that price.
+	This project will model these interactions more akin to sealed-bid
+	auctions, with the intention that bidders will place and buy bets that
+	align more closely with their true beliefs. Moreover, placing such
+	additional restrictions on how agents interact with the market allows for
+	more guarantees to be made regarding the outcomes of transactions and
+	allows more easily for results from the current literature to be
+	implemented. Of course, it will be an important design decision to ensure
+	the system both achieves these guarantees but is not too restrictive for
+	the agents so as to render the interactions contrived and unnatural.
+
+% Research Processes (Approach, Methodology)
 \section{Research Processes}
 	\label{sec:researchProcesses}
+
+	\subsection{Approach}
+
+	\subsection{Tools}
 
 \section{Project Management}
 	\label{sec:projectManagement}
