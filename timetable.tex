@@ -1,0 +1,64 @@
+\documentclass[10pt,a4paper,landscape]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{pgfgantt}
+
+\begin{document}
+
+\ganttset{%
+    calendar week text={%
+        \pgfcalendarmonthshortname{0}~\startday%
+    }%
+}
+
+\begin{ganttchart}[
+        hgrid,
+        vgrid,
+        x unit=1.8mm,
+        y unit chart=0.75cm,
+        time slot format=isodate,
+        vrule/.style={very thick, blue},
+        %vrule label font=\normal
+    ]{2020-02-17}{2020-05-10}
+
+    \gantttitlecalendar{month=name, week=1} \\
+	\ganttbar{Exam Period}{2020-03-24}{2020-05-10} \\~\\
+    \ganttbar{Specification}{2020-02-17}{2020-02-20} \\
+	\ganttbar{Presentation}{2020-04-06}{2020-04-24} \\
+
+	\ganttbar{Environment setup}{2020-02-20}{2020-02-29} \\
+	\ganttbar{Web server setup}{2020-02-17}{2020-03-05} \\
+	\ganttbar{Simple two-sided market}{2020-03-02}{2020-03-16} \\ 
+	\ganttbar{Placing bets}{2020-03-02}{2020-03-09} \\ 
+	\ganttbar{Trading bets}{2020-03-07}{2020-03-16} \\ 
+	\ganttbar{Database design}{2020-03-12}{2020-03-26} \\
+	\ganttbar{Simple odds calculations}{2020-03-09}{2020-04-01} \\
+	\ganttbar{Prediction markets literature}{2020-02-17}{2020-04-15} 
+
+\end{ganttchart}
+
+\newpage 
+
+\begin{ganttchart}[
+        hgrid,
+        vgrid,
+        x unit=1.8mm,
+        y unit chart=0.75cm,
+        time slot format=isodate,
+        vrule/.style={very thick, blue},
+        vrule label font=\bfseries
+	]{2020-05-11}{2020-09-10}
+
+    \gantttitlecalendar{month=name, week=1} \\
+	\ganttbar{Exam period}{2020-05-11}{2020-06-24} \\~\\
+	\ganttbar{Interim Report}{2020-06-01}{2020-07-02} \\
+	\ganttbar{Final report}{2020-08-10}{2020-09-10} \\
+
+	\ganttbar{Complex odds}{2020-05-25}{2020-06-21} \\
+	\ganttbar{Real data}{2020-06-05}{2020-07-05} \\
+	\ganttbar{Additional mechanisms}{2020-06-22}{2020-07-19} \\
+	\ganttbar{Testing}{2020-07-13}{2020-08-09} \\
+
+\end{ganttchart}
+\end{document}
+
